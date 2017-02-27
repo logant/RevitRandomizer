@@ -7,7 +7,7 @@
     <ProjectGuid>{7A4D1944-43C0-4396-B485-9D37E909FEEE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cervus.Revit</RootNamespace>
+    <RootNamespace>Logant.Revit</RootNamespace>
     <AssemblyName>RevitRandomizer</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

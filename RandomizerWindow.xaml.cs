@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 using Autodesk.Revit;
 using Autodesk.Revit.DB;
 
-namespace Cervus.Revit
+namespace Logant.Revit
 {
     /// <summary>
     /// Interaction logic for RandomizerWindow.xaml
