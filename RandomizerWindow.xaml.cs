@@ -111,7 +111,7 @@ namespace Logant.Revit
                     List<Parameter> parameters = new List<Parameter>();
                     foreach (Parameter p in found.Parameters)
                     {
-                        if(p.StorageType == StorageType.Double || p.StorageType == StorageType.Integer)
+                        if((p.StorageType == StorageType.Double || p.StorageType == StorageType.Integer) && !p.IsReadOnly)
                         {
                             parameters.Add(p);
                         }
