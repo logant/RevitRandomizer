@@ -16,17 +16,24 @@ using System.Windows.Shapes;
 using Autodesk.Revit;
 using Autodesk.Revit.DB;
 
-namespace LINE.Revit
+namespace Cervus.Revit
 {
     /// <summary>
     /// Interaction logic for RandomizerWindow.xaml
     /// </summary>
     public partial class RandomizerWindow : Window
     {
+        // Brushes for the button fills
+        LinearGradientBrush eBrush = new LinearGradientBrush(
+            System.Windows.Media.Color.FromArgb(255, 245, 245, 245), 
+            System.Windows.Media.Color.FromArgb(255, 195, 195, 195), 
+            new System.Windows.Point(0, 0), 
+            new System.Windows.Point(0, 1));
+        SolidColorBrush lBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0));
+
         Document doc;
         Dictionary<string, Element> typeElems;
         FamilySymbol selectedSymbol = null;
-        string selectedParamName = null;
 
         public RandomizerWindow(Document document)
         {
@@ -128,12 +135,12 @@ namespace LINE.Revit
 
         private void cancelButton_MouseEnter(object sender, MouseEventArgs e)
         {
-
+            cancelRect.Fill = eBrush;
         }
 
         private void cancelButton_MouseLeave(object sender, MouseEventArgs e)
         {
-
+            cancelRect.Fill = lBrush;
         }
 
         private void randomizeButton_Click(object sender, RoutedEventArgs e)
@@ -217,12 +224,12 @@ namespace LINE.Revit
 
         private void randomizeButton_MouseEnter(object sender, MouseEventArgs e)
         {
-
+            randomizeRect.Fill = eBrush;
         }
 
         private void randomizeButton_MouseLeave(object sender, MouseEventArgs e)
         {
-
+            randomizeRect.Fill = lBrush;
         }
     }
 }

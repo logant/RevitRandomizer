@@ -9,7 +9,7 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
-namespace LINE.Revit
+namespace Cervus.Revit
 {
     [Transaction(TransactionMode.Manual)]
     public class RandomizerCmd : IExternalCommand
@@ -18,7 +18,11 @@ namespace LINE.Revit
         {
             try
             {
+                System.Diagnostics.Process proc = System.Diagnostics.Process.GetCurrentProcess();
+                IntPtr handle = proc.MainWindowHandle;
                 RandomizerWindow window = new RandomizerWindow(commandData.Application.ActiveUIDocument.Document);
+                System.Windows.Interop.WindowInteropHelper helper = new System.Windows.Interop.WindowInteropHelper(window);
+                helper.Owner = handle;
                 window.ShowDialog();
                 return Result.Succeeded;
             }
