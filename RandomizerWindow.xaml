@@ -1,0 +1,117 @@
+﻿<Window x:Class="LINE.Revit.RandomizerWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LINE.Revit"
+             mc:Ignorable="d" 
+             Title="Randomizer"
+             WindowStyle="None"
+             AllowsTransparency="True"
+             WindowStartupLocation="CenterOwner"
+             ResizeMode="NoResize"
+             Height="500" Width="300">
+    <Window.Resources>
+        <Style x:Key="typicalButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#FF404040"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="#FF606060"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                <GradientStop Color="#FF606060" Offset="1.0"/>
+                                <GradientStop Color="#FF8B8B8B" Offset="0.0"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="BorderBrush">
+                        <Setter.Value>
+                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                <GradientStop Color="#FF606060" Offset="1.0"/>
+                                <GradientStop Color="#FF8B8B8B" Offset="0.0"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Border MouseLeftButtonDown="Border_MouseLeftButtonDown">
+        <Grid>
+            <!--Main Background-->
+            <Rectangle Fill="WhiteSmoke" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
+            <Rectangle Fill="#FF404040" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,0" Height="15"/>
+            <Rectangle Fill="#FF404040" Width="1" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="0,0,0,0"/>
+            <Rectangle Fill="#FF404040" Width="1" VerticalAlignment="Stretch" HorizontalAlignment="Right" Margin="0,0,0,0"/>
+            <Rectangle Fill="#FF404040" Height="1" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,0,0,0"/>
+            <Rectangle Fill="#FF404040" Height="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="0,0,0,0"/>
+
+            <Label Content="Randomizer" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" FontSize="16" Foreground="#FF404040" FontFamily="Arial" FontWeight="Bold"/>
+            
+            <Label Content="Category" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,40,0,0" FontFamily="Arial" Foreground="#FF404040" FontSize="12"/>
+            <ComboBox Name="categoryComboBox" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10,65,10,0" SelectionChanged="categoryComboBox_SelectionChanged"/>
+
+            <Label Content="Family:Type" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,100,0,0" FontFamily="Arial" Foreground="#FF404040" FontSize="12"/>
+            <ComboBox Name="typeComboBox" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10,125,10,0" SelectionChanged="typeComboBox_SelectionChanged"/>
+
+            <Label Content="Instance Parameter" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,160,0,0" FontFamily="Arial" Foreground="#FF404040" FontSize="12"/>
+            <ListBox Name="paramListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,185,10,130" SelectionMode="Single" />
+
+            <Label Content="Min Value" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,100" FontFamily="Arial" Foreground="#FF404040" FontSize="12"/>
+            <Label Content="Max Value" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="165,0,0,100" FontFamily="Arial" Foreground="#FF404040" FontSize="12"/>
+            <Label Content="To" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,70" FontFamily="Arial" Foreground="#FF404040" FontSize="12"/>
+            <TextBox Name="minTextBox" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,75" Width="120"/>
+            <TextBox Name="maxTextBox" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="170,0,0,75" Width="120"/>
+
+            <CheckBox Name="integerCheckBox" Content="Integers" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,50"/>
+
+
+            <Button x:Name="cancelButton" Click="cancelButton_Click"  Style="{StaticResource typicalButtonStyle}" MouseEnter="cancelButton_MouseEnter" MouseLeave="cancelButton_MouseLeave"
+                    HorizontalAlignment="Right" Width="80" Height="30" VerticalAlignment="Bottom" Margin="0,0,10,15">
+                <Button.Content>
+                    <Grid Width="80" Height="30">
+                        <Rectangle x:Name="closeButtonRect" Fill="Transparent"/>
+                        <TextBlock Text="Cancel" TextAlignment="Center"/>
+                    </Grid>
+                </Button.Content>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter Margin="{TemplateBinding Control.Padding}"
+                                          HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                          SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                          ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                                          RecognizesAccessKey="True"
+                                          Content="{TemplateBinding ContentControl.Content}"/>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button x:Name="randomizeButton" Click="randomizeButton_Click" Style="{StaticResource typicalButtonStyle}" MouseEnter="randomizeButton_MouseEnter" MouseLeave="randomizeButton_MouseLeave"
+                    HorizontalAlignment="Right" Width="80" Height="30" VerticalAlignment="Bottom" Margin="0,0,90,15">
+                <Button.Content>
+                    <Grid Width="80" Height="30">
+                        <Rectangle x:Name="randomizeButtonRect" Fill="Transparent"/>
+                        <TextBlock Text="Randomize!" TextAlignment="Center"/>
+                    </Grid>
+                </Button.Content>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter Margin="{TemplateBinding Control.Padding}"
+                                          HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                          SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                          ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                                          RecognizesAccessKey="True"
+                                          Content="{TemplateBinding ContentControl.Content}"/>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+
+        </Grid>
+    </Border>
+</Window>
