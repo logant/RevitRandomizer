@@ -14,16 +14,14 @@ namespace Logant.Revit
     [Transaction(TransactionMode.Manual)]
     public class RandomizerCmd : IExternalCommand
     {
+        RandomizerWindow window = null;
+        
+
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             try
             {
-                System.Diagnostics.Process proc = System.Diagnostics.Process.GetCurrentProcess();
-                IntPtr handle = proc.MainWindowHandle;
-                RandomizerWindow window = new RandomizerWindow(commandData.Application.ActiveUIDocument.Document);
-                System.Windows.Interop.WindowInteropHelper helper = new System.Windows.Interop.WindowInteropHelper(window);
-                helper.Owner = handle;
-                window.ShowDialog();
+                RandomizerApp._Instance.ShowForm(commandData.Application.ActiveUIDocument.Document);
                 return Result.Succeeded;
             }
             catch (Exception ex)

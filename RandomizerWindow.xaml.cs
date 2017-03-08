@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 
 using Autodesk.Revit;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 
 namespace Logant.Revit
 {
@@ -35,9 +36,16 @@ namespace Logant.Revit
         Dictionary<string, Element> typeElems;
         FamilySymbol selectedSymbol = null;
 
-        public RandomizerWindow(Document document)
+        ExternalEvent _exEvent = null;
+        ExtEventHandler _handler = null;
+
+        public Document Doc { get { return doc; } }
+
+        public RandomizerWindow(Document document, ExternalEvent exEvent, ExtEventHandler handler)
         {
             doc = document;
+            _exEvent = exEvent;
+            _handler = handler;
             
             InitializeComponent();
 
@@ -62,43 +70,61 @@ namespace Logant.Revit
 
         private void categoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Category cat = categoryComboBox.SelectedItem as Category;
-
-            if (cat != null)
+            try
             {
-                List<string> elementNames = new List<string>();
-                FilteredElementCollector collector = new FilteredElementCollector(doc).OfCategoryId(cat.Id).WhereElementIsElementType();
-                typeElems = new Dictionary<string, Element>();
-                foreach (Element elem in collector)
+                Category cat = categoryComboBox.SelectedItem as Category;
+
+                if (cat != null)
                 {
+                    List<string> elementNames = new List<string>();
+                    FilteredElementCollector collector = new FilteredElementCollector(doc).OfCategoryId(cat.Id).WhereElementIsElementType();
+                    typeElems = new Dictionary<string, Element>();
+                    foreach (Element elem in collector)
+                    {
+                        try
+                        {
+                            ElementType eType = elem as ElementType;
+                            FamilyInstanceFilter instFilter = new FamilyInstanceFilter(doc, eType.Id);
+                            ICollection<ElementId> instanceCol = new FilteredElementCollector(doc).OfCategoryId(eType.Category.Id).WherePasses(instFilter).ToElementIds();
+                            if (instanceCol.Count == 0)
+                                continue;
+
+                            string name = eType.FamilyName + ": " + eType.Name + " [" + instanceCol.Count.ToString() + "]";
+                            elementNames.Add(name);
+                            typeElems.Add(name, elem);
+                        }
+                        catch { }
+                    }
+                    elementNames.Sort();
+
+                    typeComboBox.ItemsSource = elementNames;
                     try
                     {
-                        ElementType eType = elem as ElementType;
-                        FamilyInstanceFilter instFilter = new FamilyInstanceFilter(doc, eType.Id);
-                        ICollection<ElementId> instanceCol = new FilteredElementCollector(doc).OfCategoryId(eType.Category.Id).WherePasses(instFilter).ToElementIds();
-                        if (instanceCol.Count == 0)
-                            continue;
-
-                        string name = eType.FamilyName + ": " + eType.Name + " [" + instanceCol.Count.ToString() + "]";
-                        elementNames.Add(name);
-                        typeElems.Add(name, elem);
+                        typeComboBox.SelectedIndex = 0;
                     }
                     catch { }
                 }
-                elementNames.Sort();
-
-                typeComboBox.ItemsSource = elementNames;
-                typeComboBox.SelectedIndex = 0;
+                else
+                    typeComboBox.ItemsSource = "Invalid Category";
             }
-            else
-                typeComboBox.ItemsSource = "Invalid Category";
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error:\n" + ex.ToString());
+            }
         }
 
         private void typeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string elementName = typeComboBox.SelectedItem as string;
+            string elementName = string.Empty;
+            Element selectedType = null;
+            try
+            {
+                elementName = typeComboBox.SelectedItem as string;
+                selectedType = typeElems[elementName];
+            }
+            catch { }
 
-            Element selectedType = typeElems[elementName];
+            
             if(selectedType != null)
             {
                 // Try to find an instance of this type.
@@ -123,14 +149,17 @@ namespace Logant.Revit
                     paramListBox.DisplayMemberPath = "Definition.Name";
                     selectedSymbol = eType as FamilySymbol;
                  }
-
-
+            }
+            else
+            {
+                paramListBox.ItemsSource = new List<Parameter>();
+                selectedSymbol = null;
             }
         }
 
         private void cancelButton_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            Hide();
         }
 
         private void cancelButton_MouseEnter(object sender, MouseEventArgs e)
@@ -166,60 +195,68 @@ namespace Logant.Revit
             if (!double.TryParse(maxTextBox.Text, out maxDouble))
                 maxDouble = double.NaN;
 
-            Random rand = new Random();
+            _handler.MaxInt = maxInt;
+            _handler.MinInt = minInt;
+            _handler.MinDouble = minDouble;
+            _handler.MaxDouble = maxDouble;
+            _handler.IntegersOnly = integerCheckBox.IsChecked.Value;
+            _handler.Elements = instanceCol;
+            _handler.Doc = doc;
+            _handler.Parameter = param;
+            _exEvent.Raise();
 
-            if (integerCheckBox.IsChecked.HasValue && integerCheckBox.IsChecked.Value)
-            {
-                if (minInt != int.MinValue && maxInt != int.MinValue)
-                {
-                    using (Transaction randomTrans = new Transaction(doc, "Randomize"))
-                    {
-                        randomTrans.Start();
-                        foreach (ElementId eid in instanceCol)
-                        {
-                            Element elem = doc.GetElement(eid);
-                            try
-                            {
-                                int r = rand.Next(minInt, maxInt);
-                                elem.get_Parameter(param.Definition).Set(r);
-                            }
-                            catch { }
-                        }
-                        randomTrans.Commit();
-                    }
-                }
-            }
-            else 
-            {
-                if (minDouble != double.NaN && maxDouble != double.NaN)
-                {
-                    using (Transaction randomTrans = new Transaction(doc, "Randomize"))
-                    {
-                        randomTrans.Start();
+            //Random rand = new Random();
 
-                        foreach (ElementId eid in instanceCol)
-                        {
-                            Element elem = doc.GetElement(eid);
-                            try
-                            {
-                                double range = maxDouble - minDouble;
-                                double r = rand.NextDouble() * range + minDouble;
-                                if(param.Definition.ParameterType == ParameterType.Length)
-                                {
-                                    Units units = doc.GetUnits();
-                                    r = UnitUtils.ConvertToInternalUnits(r, param.DisplayUnitType);
-                                }
-                                elem.get_Parameter(param.Definition).Set(r);
-                            }
-                            catch (Exception ex) { Autodesk.Revit.UI.TaskDialog.Show("Error", ex.Message); }
-                        }
+            //if (integerCheckBox.IsChecked.HasValue && integerCheckBox.IsChecked.Value)
+            //{
+            //    if (minInt != int.MinValue && maxInt != int.MinValue)
+            //    {
+            //        using (Transaction randomTrans = new Transaction(doc, "Randomize"))
+            //        {
+            //            randomTrans.Start();
+            //            foreach (ElementId eid in instanceCol)
+            //            {
+            //                Element elem = doc.GetElement(eid);
+            //                try
+            //                {
+            //                    int r = rand.Next(minInt, maxInt);
+            //                    elem.get_Parameter(param.Definition).Set(r);
+            //                }
+            //                catch { }
+            //            }
+            //            randomTrans.Commit();
+            //        }
+            //    }
+            //}
+            //else 
+            //{
+            //    if (minDouble != double.NaN && maxDouble != double.NaN)
+            //    {
+            //        using (Transaction randomTrans = new Transaction(doc, "Randomize"))
+            //        {
+            //            randomTrans.Start();
 
-                        randomTrans.Commit();
-                    }
-                }
-            }
+            //            foreach (ElementId eid in instanceCol)
+            //            {
+            //                Element elem = doc.GetElement(eid);
+            //                try
+            //                {
+            //                    double range = maxDouble - minDouble;
+            //                    double r = rand.NextDouble() * range + minDouble;
+            //                    if(param.Definition.ParameterType == ParameterType.Length)
+            //                    {
+            //                        Units units = doc.GetUnits();
+            //                        r = UnitUtils.ConvertToInternalUnits(r, param.DisplayUnitType);
+            //                    }
+            //                    elem.get_Parameter(param.Definition).Set(r);
+            //                }
+            //                catch (Exception ex) { Autodesk.Revit.UI.TaskDialog.Show("Error", ex.Message); }
+            //            }
 
-            Close();
+            //            randomTrans.Commit();
+            //        }
+            //    }
+            //}
         }
 
         private void randomizeButton_MouseEnter(object sender, MouseEventArgs e)
@@ -230,6 +267,33 @@ namespace Logant.Revit
         private void randomizeButton_MouseLeave(object sender, MouseEventArgs e)
         {
             randomizeRect.Fill = lBrush;
+        }
+
+        private void resetButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Clear out all of the selections
+                minTextBox.Text = string.Empty;
+                maxTextBox.Text = string.Empty;
+
+                categoryComboBox.SelectedIndex = 0;
+                integerCheckBox.IsChecked = false;
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Error", ex.ToString());
+            }
+        }
+
+        private void resetButton_MouseEnter(object sender, MouseEventArgs e)
+        {
+            resetRect.Fill = eBrush;
+        }
+
+        private void resetButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            resetRect.Fill = lBrush;
         }
     }
 }

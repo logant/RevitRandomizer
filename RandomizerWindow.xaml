@@ -63,11 +63,11 @@
 
             <Label Content="Min Value" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,100" FontFamily="Arial" Foreground="#FF404040" FontSize="12"/>
             <Label Content="Max Value" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="165,0,0,100" FontFamily="Arial" Foreground="#FF404040" FontSize="12"/>
-            <Label Content="To" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,70" FontFamily="Arial" Foreground="#FF404040" FontSize="12"/>
-            <TextBox Name="minTextBox" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,75" Width="120"/>
-            <TextBox Name="maxTextBox" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="170,0,0,75" Width="120"/>
+            <Label Content="To" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,75" FontFamily="Arial" Foreground="#FF404040" FontSize="12"/>
+            <TextBox Name="minTextBox" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,80" Width="120"/>
+            <TextBox Name="maxTextBox" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="170,0,0,80" Width="120"/>
 
-            <CheckBox Name="integerCheckBox" Content="Integers" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,50"/>
+            <CheckBox Name="integerCheckBox" Content="Integers" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,55"/>
 
 
             <Button x:Name="cancelButton" Click="cancelButton_Click"  Style="{StaticResource typicalButtonStyle}" MouseEnter="cancelButton_MouseEnter" MouseLeave="cancelButton_MouseLeave"
@@ -75,7 +75,7 @@
                 <Button.Content>
                     <Grid Width="80" Height="30">
                         <Rectangle x:Name="cancelRect" Fill="Transparent"/>
-                        <TextBlock Text="Cancel" TextAlignment="Center"/>
+                        <TextBlock Text="Close" TextAlignment="Center"/>
                     </Grid>
                 </Button.Content>
                 <Button.Template>
@@ -96,6 +96,27 @@
                     <Grid Width="80" Height="30">
                         <Rectangle x:Name="randomizeRect" Fill="Transparent"/>
                         <TextBlock Text="Randomize!" TextAlignment="Center"/>
+                    </Grid>
+                </Button.Content>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter Margin="{TemplateBinding Control.Padding}"
+                                          HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                          SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                          ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                                          RecognizesAccessKey="True"
+                                          Content="{TemplateBinding ContentControl.Content}"/>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button x:Name="resetButton" Click="resetButton_Click" Style="{StaticResource typicalButtonStyle}" MouseEnter="resetButton_MouseEnter" MouseLeave="resetButton_MouseLeave"
+                    HorizontalAlignment="Left" Width="80" Height="30" VerticalAlignment="Bottom" Margin="10,0,0,15">
+                <Button.Content>
+                    <Grid Width="80" Height="30">
+                        <Rectangle x:Name="resetRect" Fill="Transparent"/>
+                        <TextBlock Text="Reset" TextAlignment="Center"/>
                     </Grid>
                 </Button.Content>
                 <Button.Template>
