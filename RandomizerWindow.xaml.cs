@@ -33,6 +33,7 @@ namespace Logant.Revit
         SolidColorBrush lBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0));
 
         Document doc;
+        UIDocument uiDoc;
         Dictionary<string, Element> typeElems;
         FamilySymbol selectedSymbol = null;
 
@@ -41,9 +42,10 @@ namespace Logant.Revit
 
         public Document Doc { get { return doc; } }
 
-        public RandomizerWindow(Document document, ExternalEvent exEvent, ExtEventHandler handler)
+        public RandomizerWindow(UIDocument uiDocument, ExternalEvent exEvent, ExtEventHandler handler)
         {
-            doc = document;
+            uiDoc = uiDocument;
+            doc = uiDocument.Document;
             _exEvent = exEvent;
             _handler = handler;
             
@@ -294,6 +296,50 @@ namespace Logant.Revit
         private void resetButton_MouseLeave(object sender, MouseEventArgs e)
         {
             resetRect.Fill = lBrush;
+        }
+
+        private void pickButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Pick an element and set the other stuff based on it.
+            try
+            {
+                Reference picRef = uiDoc.Selection.PickObject(Autodesk.Revit.UI.Selection.ObjectType.Element);
+                Element elem = doc.GetElement(picRef.ElementId);
+                FamilyInstance fi = elem as FamilyInstance;
+                if (fi == null)
+                    throw new Exception();
+                for (int i = 0; i < categoryComboBox.Items.Count; i++)
+                {
+                    Category cat = categoryComboBox.Items[i] as Category;
+                    if (cat.Id.IntegerValue == elem.Category.Id.IntegerValue)
+                    {
+                        categoryComboBox.SelectedIndex = i;
+                        break;
+                    }
+                }
+
+                string name = fi.Symbol.FamilyName + ": " + fi.Symbol.Name;
+                for (int i = 0; i < typeComboBox.Items.Count; i++)
+                {
+                    string elementName = typeComboBox.Items[i] as string;
+                    if(elementName.Contains(name))
+                    {
+                        typeComboBox.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void pickButton_MouseEnter(object sender, MouseEventArgs e)
+        {
+            pickRect.Fill = eBrush;
+        }
+
+        private void pickButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            pickRect.Fill = lBrush;
         }
     }
 }

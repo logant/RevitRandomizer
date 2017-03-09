@@ -22,6 +22,11 @@ namespace Logant.Revit
 
         public Result OnShutdown(UIControlledApplication application)
         {
+            try
+            {
+                window.Close();
+            }
+            catch { }
             return Result.Succeeded;
         }
 
@@ -56,7 +61,7 @@ namespace Logant.Revit
             }
         }
 
-        public void ShowForm(Document doc)
+        public void ShowForm(UIDocument doc)
         {
             if(window == null)
             {
@@ -70,7 +75,7 @@ namespace Logant.Revit
             else
             {
                 // Compare the current document to the window's document
-                if(doc.PathName == window.Doc.PathName || doc.Title == window.Doc.Title)
+                if(doc.Document.PathName == window.Doc.PathName || doc.Document.Title == window.Doc.Title)
                     window.Show();
                 else
                 {

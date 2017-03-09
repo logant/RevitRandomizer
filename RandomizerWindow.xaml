@@ -39,6 +39,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <BitmapImage x:Key="PickIcon" UriSource="images/PickIcon.png"/>
     </Window.Resources>
     <Border MouseLeftButtonDown="Border_MouseLeftButtonDown">
         <Grid>
@@ -56,7 +57,7 @@
             <ComboBox Name="categoryComboBox" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10,65,10,0" SelectionChanged="categoryComboBox_SelectionChanged"/>
 
             <Label Content="Family:Type" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,100,0,0" FontFamily="Arial" Foreground="#FF404040" FontSize="12"/>
-            <ComboBox Name="typeComboBox" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10,125,10,0" SelectionChanged="typeComboBox_SelectionChanged"/>
+            <ComboBox Name="typeComboBox" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10,125,50,0" SelectionChanged="typeComboBox_SelectionChanged"/>
 
             <Label Content="Instance Parameter" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,160,0,0" FontFamily="Arial" Foreground="#FF404040" FontSize="12"/>
             <ListBox Name="paramListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,185,10,130" SelectionMode="Single" />
@@ -117,6 +118,27 @@
                     <Grid Width="80" Height="30">
                         <Rectangle x:Name="resetRect" Fill="Transparent"/>
                         <TextBlock Text="Reset" TextAlignment="Center"/>
+                    </Grid>
+                </Button.Content>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter Margin="{TemplateBinding Control.Padding}"
+                                          HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                          SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                          ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                                          RecognizesAccessKey="True"
+                                          Content="{TemplateBinding ContentControl.Content}"/>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button x:Name="pickButton" Click="pickButton_Click" Style="{StaticResource typicalButtonStyle}" MouseEnter="pickButton_MouseEnter" MouseLeave="pickButton_MouseLeave"
+                    HorizontalAlignment="Right" Width="30" Height="30" VerticalAlignment="Top" Margin="0,120,10,0" ToolTip="Select a Family Instance to randomize.">
+                <Button.Content>
+                    <Grid Width="30" Height="30">
+                        <Rectangle x:Name="pickRect" Fill="Transparent"/>
+                        <Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4" Source="{StaticResource PickIcon}"/>
                     </Grid>
                 </Button.Content>
                 <Button.Template>

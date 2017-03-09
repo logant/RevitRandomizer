@@ -21,7 +21,7 @@ namespace Logant.Revit
         {
             try
             {
-                RandomizerApp._Instance.ShowForm(commandData.Application.ActiveUIDocument.Document);
+                RandomizerApp._Instance.ShowForm(commandData.Application.ActiveUIDocument);
                 return Result.Succeeded;
             }
             catch (Exception ex)
