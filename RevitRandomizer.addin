@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+   <AddIn Type="Application">
+      <Assembly>RevitRandomizer.dll</Assembly>
+      <ClientId>d60f1a63-5cf0-4906-9a35-bd5a12c8971b</ClientId>
+      <FullClassName>Logant.Revit.RandomizerApp</FullClassName>
+      <Name>Randomizer</Name>
+      <VendorId>LGNT</VendorId>
+      <VendorDescription>Logant, https://github.com/logant</VendorDescription>	  
+   </AddIn>
+</RevitAddIns>
